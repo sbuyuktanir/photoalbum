@@ -3,9 +3,9 @@ package at.spengergasse.photoalbum.domain;
 import lombok.*;
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @AllArgsConstructor
-@Builder
+// @Builder  //cikardik cünkü cannot be instantiated hatasi veriyor
 
 public abstract class AbstractPerson {
     private String userName;

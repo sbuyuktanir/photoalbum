@@ -6,9 +6,9 @@ import javax.validation.constraints.Email;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+// @Builder
 
 public class Photographer extends AbstractPerson {
 
