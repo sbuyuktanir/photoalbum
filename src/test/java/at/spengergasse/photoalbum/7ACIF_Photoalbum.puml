@@ -1,0 +1,100 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+entity Photo {
+- fileName : String
+- name : String
+- creationTS : LocalDateTime
+- width : Integer
+- height : Integer
+- photographer : Photographer
+- orientation : Orientation
+}
+
+entity Album {
+- name : String
+- creationTS : LocalDateTime
+- restricted : Boolean
+}
+
+abstract AbstractPerson {
+- userName : String
+- firstName : String
+- lastName : String
+}
+
+entity Person {
+- nickname : String
+}
+
+entity Photographer {
+- studioAddress : Address
+- billingAddress : Address
+- mobilePhoneNumber : PhoneNumber
+- businessPhoneNumber : PhoneNumber
+- emails : Set<Email>
+}
+
+entity PersonTag {
+- photo : Photo
+- person : Person
+- rating : Integer
+}
+
+entity AlbumPhotoContainment {
+- album : Album
+- photo : Photo
+- assignmentTS : LocalDateTime
+}
+
+entity Country {
+name : String
+iso2Code : String
+}
+
+enum Orientation {
+PORTRAIT
+LANDSCAPE
+SQUARE
+}
+
+enum EmailType {
+PRIVATE
+BUSINESS
+}
+
+class Address << (V, #FF7700) value-object >> {
+- streetNumber : String
+- zipCode : String
+- city : String
+- country : Country
+}
+
+class PhoneNumber << (V, #FF7700) value-object >> {
+- countryCode : Integer
+- areaCode : Integer
+- serialNumber : String
+}
+
+class Email << (V, #FF7700) value-object >> {
+- address : String
+- type : EmailType
+}
+
+Album <-- "1..n" AlbumPhotoContainment : references <
+Photo <-- "1..n" AlbumPhotoContainment : references <
+Photographer -up-|> AbstractPerson
+Person -right-|> AbstractPerson
+Photographer "0..1" -left- "0..n" Photo : taken by <
+Photographer --> "0..1" Address : studioAddress
+Photographer --> "0..1" Address : billingAddress
+Photographer -right-> PhoneNumber : mobilePhoneNumber
+Photographer -up-> "0..1" PhoneNumber : businessPhoneNumber
+Photographer *--> "0..n" Email : has >
+PersonTag -right-> Person : tags >
+PersonTag --> Photo : describes >
+Email -right-> EmailType
+Address "0..n" -left-> Country
+Photo --> Orientation
+
+@enduml
