@@ -2,35 +2,25 @@ package at.spengergasse.photoalbum.persistence.converter;
 
 import at.spengergasse.photoalbum.domain.Orientation;
 
-import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.util.Optional;
-import java.util.function.Function;
 
 @Converter(autoApply = true)
-public class OrientationConverter implements AttributeConverter<Orientation, String> {
+public class OrientationConverter extends AbstractEnumToStringConverter<Orientation> {
 
-    private static Function<Orientation, String> toDbValue = (o) -> switch (o) {
-        case LANDSCAPE -> "L";
-        case SQUARE -> "S";
-        case PORTRAIT -> "P";
-    };
+    public OrientationConverter() {
 
-    private static Function<String, Orientation> fromDbValue = (v) -> switch (v) {
-        case "L" -> Orientation.LANDSCAPE;
-        case "P" -> Orientation.PORTRAIT;
-        case "S" -> Orientation.SQUARE;
-        default -> null;
-    };
+        super((o) -> switch (o) {
+            case LANDSCAPE -> "L";
+            case SQUARE -> "S";
+            case PORTRAIT -> "P";
+        }, (v) -> switch (v) {
+            case "L" -> Orientation.LANDSCAPE;
+            case "P" -> Orientation.PORTRAIT;
+            case "S" -> Orientation.SQUARE;
+        //    default -> null;
+            default -> throw new IllegalArgumentException("Data Quality Problem in DB: %s is not a vlaid orientation value!".formatted(v));
+        });
 
-    @Override
-    public String convertToDatabaseColumn(Orientation orientation) {
-        return Optional.ofNullable(orientation).map(toDbValue).orElse(null);
-    }
-
-    @Override
-    public Orientation convertToEntityAttribute(String dbValue) {
-        return Optional.ofNullable(dbValue).map(fromDbValue).orElse(null);
     }
 
 }
