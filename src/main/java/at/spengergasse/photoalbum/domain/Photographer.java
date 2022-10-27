@@ -30,7 +30,6 @@ public class Photographer extends AbstractPerson {
                                 joinColumns = {@JoinColumn(name = "studio_country_id")},
                                 foreignKey = @ForeignKey(name = "FK_photographers_studio_country"))
     })
-
     private at.spengergasse.photoalbum.domain.Address studioAddress;
 
     @Embedded  //Entity Photographer, die vier Attribute von Address.java zusätzlich gekriegt.
@@ -44,7 +43,6 @@ public class Photographer extends AbstractPerson {
                     joinColumns = {@JoinColumn(name = "billing_country_id")},
                     foreignKey = @ForeignKey(name = "FK_photographers_billing_country"))
     })
-
     private Address billingAddress;
 
     @Embedded  //Entity Photographer, die vier Attribute von Address.java zusätzlich gekriegt.
@@ -53,7 +51,6 @@ public class Photographer extends AbstractPerson {
             @AttributeOverride(name = "areaCode", column = @Column(name = "mobile_area_code")),
             @AttributeOverride(name = "serialNumber", column = @Column(name = "mobile_serial_number", length=16)),
     })
-
     private PhoneNumber mobilePhoneNumber;
 
     @Embedded  //Entity Photographer, die vier Attribute von Address.java zusätzlich gekriegt.
@@ -62,14 +59,12 @@ public class Photographer extends AbstractPerson {
             @AttributeOverride(name = "areaCode", column = @Column(name = "business_area_code")),
             @AttributeOverride(name = "serialNumber", column = @Column(name = "business_serial_number", length=16)),
     })
-
     private PhoneNumber businessPhoneNumber;
 
 //    @Builder.Default
-    @ElementCollection
+    @ElementCollection  //Photographer`in birden fazla email oldugu icin CollectionTable create ediyoruz.
     @CollectionTable(name="photographer_emails", joinColumns=@JoinColumn(name="photographer_id",
     foreignKey = @ForeignKey(name="FK_photographer_emails")))
-
     private Set<at.spengergasse.photoalbum.domain.Email> emails = new HashSet<>(2);  //cift email oldugu icin
 
 //    @Builder
