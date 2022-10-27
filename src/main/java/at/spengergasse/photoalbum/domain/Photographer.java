@@ -86,5 +86,4 @@ public class Photographer extends AbstractPerson {
 //        this.emails = getEmails();
         this.emails = emails;
     }
-
-    }
+}
