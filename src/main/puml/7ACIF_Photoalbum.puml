@@ -9,12 +9,20 @@ entity Photo {
 - height : Integer
 - photographer : Photographer
 - orientation : Orientation
+- taggedPerson : Set<TaggedPerson>
+}
+
+class AlbumPhoto << (V, #FF7700) value-object >> {
+- photo : Photo
+- position : Integer
+- assignmentTS : LocalDateTime
 }
 
 entity Album {
 - name : String
 - creationTS : LocalDateTime
 - restricted : Boolean
+- photos : Set<AlbumPhoto>
 }
 
 abstract AbstractPerson {
@@ -33,19 +41,20 @@ entity Photographer {
 - mobilePhoneNumber : PhoneNumber
 - businessPhoneNumber : PhoneNumber
 - emails : Set<Email>
+' - photos : Set<Photo> - technisch möglich, wenig sinn
 }
 
-entity PersonTag {
+entity TaggedPerson {
 - photo : Photo
 - person : Person
 - rating : Integer
 }
 
-entity AlbumPhotoContainment {
-- album : Album
-- photo : Photo
-- assignmentTS : LocalDateTime
-}
+' entity AlbumPhotoContainment {
+' - album : Album
+' - photo : Photo
+' - assignmentTS : LocalDateTime
+' }
 
 entity Country {
 name : String
@@ -81,8 +90,10 @@ class Email << (V, #FF7700) value-object >> {
 - type : EmailType
 }
 
-Album <-- "1..n" AlbumPhotoContainment : references <
-Photo <-- "1..n" AlbumPhotoContainment : references <
+' Album <-- "1..n" AlbumPhotoContainment : references <  -ismi degisti
+' Photo <-- "1..n" AlbumPhotoContainment : references <
+Album "1" *-- "1..n" AlbumPhoto
+Photo <-- "1..n" AlbumPhoto : references <
 Photographer -up-|> AbstractPerson
 Person -right-|> AbstractPerson
 Photographer "0..1" -left- "0..n" Photo : taken by <
@@ -91,8 +102,9 @@ Photographer --> "0..1" Address : billingAddress
 Photographer -right-> PhoneNumber : mobilePhoneNumber
 Photographer -up-> "0..1" PhoneNumber : businessPhoneNumber
 Photographer *--> "0..n" Email : has >
-PersonTag -right-> Person : tags >
-PersonTag --> Photo : describes >
+TaggedPerson -right-> Person : tags >
+TaggedPerson --> Photo : describes >
+TaggedPerson --* Photo
 Email -right-> EmailType
 Address "0..n" -left-> Country
 Photo --> Orientation

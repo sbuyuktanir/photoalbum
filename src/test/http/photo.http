@@ -1,0 +1,66 @@
+###
+GET  http://localhost:8080/api/photos
+
+> {%
+ client.test("Request executed successfully", function() {
+ client.assert(response.status === 200, "Response status is not 200");
+ });
+ %}
+
+###
+
+POST  http://localhost:8080/api/photos/
+Content-Type: application/json
+
+{
+  "fileName": "Leo-2021.jpg",
+  "name": "Mein zweites Photo",
+  "width": 640,
+  "height": 480,
+  "photographerKey": "81ig"
+}
+
+###
+
+POST  http://localhost:8080/api/photos/
+Content-Type: application/json
+
+{
+"fileName": "DSC-4711.jpg",
+"name": "Mein erstes Photo",
+"width": 640,
+"height": 480,
+"photographerKey": "L2Ne"
+}
+
+> {%
+ client.test("Request executed successfully", function() {
+ client.assert(response.status === 201, "Response status is not 201");
+ });
+
+ client.test("Response content-type is json", function () {
+     var type = response.contentType.mimeType;
+     client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+ });
+
+ var location = response.headers.valueOf("Location");
+ var token = location.substring(location.lastIndexOf("/")+1);
+ client.global.set("token", token);
+ %}
+
+###
+//GET  http://localhost:8080/api/photos/Mein%20erstes%20Photo
+GET  http://localhost:8080/api/photos/{{token}}
+
+###
+//PATCH  http://localhost:8080/api/photos/Mein%20erstes%20Photo?name=SBT-4711
+PATCH  http://localhost:8080/api/photos/{{token}}?name=SBT-4711
+
+###
+GET  http://localhost:8080/api/photos/{{token}}
+
+> {%
+ client.test("Request executed successfully", function() {
+ client.assert(response.status === 200, "Response status is not 200");
+ });
+ %}

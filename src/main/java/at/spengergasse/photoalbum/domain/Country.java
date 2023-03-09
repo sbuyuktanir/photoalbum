@@ -6,6 +6,9 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Version;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,10 +19,16 @@ import javax.persistence.Table;
 @Table(name="countries")
 public class Country extends AbstractPersistable<Long> {
 
-@Column(length = 64)
+    @NotNull
+    @Version
+    private Integer version;
+
+    @NotBlank
+    @Column(length = 64)
     private String name;
 
-@Column(length = 2)
+    @NotBlank
+    @Column(length = 2)
     private String iso2Code;
 
 }

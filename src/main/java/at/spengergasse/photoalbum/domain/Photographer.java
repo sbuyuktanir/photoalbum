@@ -1,10 +1,12 @@
 package at.spengergasse.photoalbum.domain;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -15,9 +17,14 @@ import java.util.Set;
 @Entity
 @Table(name="photographers")  //Database Table creation
 
-public class Photographer extends AbstractPerson {
+public class Photographer extends AbstractPerson implements KeyHolder{
     //primary key atamak icin AbstractPerson extends AbstractPersistable<Long> yaptik.
     //AbstractPerson`a @MappedSuperclass ekledik.
+
+    public static final int KEY_LENGTH = 4;
+    @NotNull
+    @Column(length = KEY_LENGTH, unique = true)
+    private String key;
 
     @Embedded  //Entity Photographer, die vier Attribute von Address.java zusätzlich gekriegt.
     @AttributeOverrides({
@@ -65,25 +72,42 @@ public class Photographer extends AbstractPerson {
     @ElementCollection  //Photographer`in birden fazla email oldugu icin CollectionTable create ediyoruz.
     @CollectionTable(name="photographer_emails", joinColumns=@JoinColumn(name="photographer_id",
     foreignKey = @ForeignKey(name="FK_photographer_emails")))
-    private Set<at.spengergasse.photoalbum.domain.Email> emails = new HashSet<>(2);  //cift email oldugu icin
+    @OrderColumn(name="position")
+    private Set<EmailAddress> emailAddresses = new HashSet<>(2);  //cift email oldugu icin
 
-//    @Builder
-    public Photographer(String userName, String firstName, String lastName, Address studioAddress,
+    @Builder
+    public Photographer(String key, String userName, String firstName, String lastName, Address studioAddress,
                         Address billingAddress, PhoneNumber mobilePhoneNumber, PhoneNumber businessPhoneNumber) {
         super(userName, firstName, lastName);
+        this.key = key;
         this.studioAddress = studioAddress;
         this.billingAddress = billingAddress;
         this.mobilePhoneNumber = mobilePhoneNumber;
         this.businessPhoneNumber = businessPhoneNumber;
-        this.emails = Optional.ofNullable(emails).orElseGet(HashSet::new);
+        this.emailAddresses = emailAddresses == null ? new HashSet<>(2) : new HashSet<>(emailAddresses);
+//        this.emailAddresses = new HashSet<>(emailAddresses);
+//        this.emails = Optional.ofNullable(emails).orElseGet(HashSet::new);
     }
 
-    @Builder
-    public Photographer(String userName, String firstName, String lastName, Address studioAddress,
-                        Address billingAddress, PhoneNumber mobilePhoneNumber, PhoneNumber businessPhoneNumber, Set<Email> emails) {
-        this(userName, firstName, lastName, studioAddress, billingAddress, mobilePhoneNumber, businessPhoneNumber);
+    public Set<EmailAddress> getEmailAddresses() {
+        return Collections.unmodifiableSet(emailAddresses);
+    }
+
+//    @Builder
+//    public Photographer(String userName, String firstName, String lastName, Address studioAddress,
+//                        Address billingAddress, PhoneNumber mobilePhoneNumber, PhoneNumber businessPhoneNumber, Set<Email> emails) {
+//        this(userName, firstName, lastName, studioAddress, billingAddress, mobilePhoneNumber, businessPhoneNumber);
 //        Set<at.spengergasse.photoalbum.domain.Email> email = null;
 //        this.emails = getEmails();
-        this.emails = emails;
+//        this.emails = emails;
+//    }
+
+    public Photographer addEmails(EmailAddress... emailAddresses){
+        Arrays.stream(emailAddresses).forEach(this.emailAddresses::add);
+        return this;
+    }
+
+    public String getDisplayName() {
+        return "%s %s".formatted(getFirstName(), getLastName().toUpperCase());
     }
 }

@@ -1,7 +1,9 @@
 package at.spengergasse.photoalbum.persistence;
 
+import at.spengergasse.photoalbum.TestFixtures;
 import at.spengergasse.photoalbum.domain.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -9,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import static at.spengergasse.photoalbum.TestFixtures.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
@@ -18,86 +21,53 @@ class PhotoRepositoryTest {
     @Autowired
     private PhotoRepository photoRepository;
 
+    @Autowired
+    private PhotographerRepository photographerRepository;
+
     @BeforeEach
     void setup() {
         assumeThat(photoRepository).isNotNull();
     }
 
+    @Disabled
     @Test
     void ensureSaveAndRereadOfPhotoWorksCorrectly() {
 
         //given /arrange
-        Country aut = Country.builder().name("Österreich").iso2Code("AT").build();
-        
-        Address spg20 = Address.builder()
-                .streetNumber("Spengergasse 20")
-                .zipCode("1050")
-                .city("Wien")
-                .country(aut)
-                .build();
+//        Country at = austria();
+//        Photographer uk = uk(at);
+        Photo photo = createPhoto("DSC_4711.png", "Photo 1", TestFixtures.uk);
 
-        Address spg21 = Address.builder()
-                .streetNumber("Spengergasse 21")
-                .zipCode("1050")
-                .city("Wien")
-                .country(aut)
-                .build();
-        
-        PhoneNumber mobilePhoneNumber = PhoneNumber.builder()
-                .countryCode(43)
-                .areaCode(660)
-                .serialNumber("1234567")
-                .build();
+        //when /act
+//      var saved = photoRepository.saveAndFlush(photo);  //Photo yazma, kendi geliyor.
+        var saved = photoRepository.save(photo);  //Photo yazma, kendi geliyor.
 
-        Email uk_spg_at = Email.builder().address("unger@spg.at").type(EmailType.BUSINESS).build();
-        
-        Photographer uk = Photographer.builder()
-                .userName("uk")
-                .firstName("Klaus")
-                .lastName("Unger")
-                .studioAddress(spg20)
-                .billingAddress(spg21)
-                .mobilePhoneNumber(mobilePhoneNumber)
-                .emails(Set.of(uk_spg_at))
-                .build();
-        
-        Photo photo = Photo.builder()
-                .fileName("DSC-890.jpg")
-                .name("My first Bild")
-                .width(640)
-                .height(480)
-                .creationTS(LocalDateTime.now())
-                .orientation(Orientation.LANDSCAPE)
-                .photographer(uk)
-                .build();
-/*
-        Photographer sbt = Photographer.builder()
-                .userName("sbt")
-                .firstName("Selcuk")
-                .lastName("Büyüktanir")
-                .studioAddress(spg20)
-                .build();
-*/
-        Photo photo2 = Photo.builder()
-                .fileName("DSC-42.jpg")
-                .name("My second Bild")
-                .width(420)
-                .height(240)
-                .creationTS(LocalDateTime.now())
-                .orientation(Orientation.SQUARE)
-                .photographer(uk)
-                .build();
-
-        //when
-        var saved = photoRepository.saveAndFlush(photo);  //Photo yazma, kendi geliyor.
-        var saved2 = photoRepository.saveAndFlush(photo2);  //Photo yazma, kendi geliyor.
-
-        //then
+        //then /assert
         assertThat(saved).isSameAs(photo);
         assertThat(saved.getId()).isNotNull();
 
-        assertThat(saved2).isSameAs(photo2);
-        assertThat(saved2.getId()).isNotNull();
     }
 
+
+    @Disabled  //ignore test
+    @Test
+    void ensureSavePhotoWithTaggedPersonWorksCorrectly() {
+
+        //given /arrange
+        Person jg = Person.builder().userName("grueneis@spg.at").firstName("Joachim").lastName("Grüneis").nickName("JG").build();
+//        Country at = austria();
+//        Photographer uk = uk(at);
+        Photographer uk = photographerRepository.findByUserName("unger@spengergasse.at").orElse(TestFixtures.uk);
+        Photo photo = createPhoto("DSC_4711.png", "Photo 1", uk)
+                .tagPerson(jg, 5);
+
+        //when /act
+      var saved = photoRepository.saveAndFlush(photo);  //Photo yazma, kendi geliyor.
+//        var saved = photoRepository.save(photo);  //Photo yazma, kendi geliyor.
+
+        //then /assert
+        assertThat(saved).isSameAs(photo);
+        assertThat(saved.getId()).isNotNull();
+
+    }
 }

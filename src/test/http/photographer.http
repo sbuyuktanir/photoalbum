@@ -1,0 +1,51 @@
+GET  http://localhost:8080/api/photographers/
+
+> {%
+ client.test("Request executed successfully", function() {
+ client.assert(response.status === 200, "Response status is not 200");
+ });
+ %}
+
+###
+POST  http://localhost:8080/api/photographers/
+Content-Type: application/json
+
+{
+  "userName" : "uk@spg.at",
+  "firstName" : "Klaus",
+  "lastName" : "UNGER",
+  "billingAddressStreetNumber" : "Spengergasse 20",
+  "billingAddressZipCode" : "1050",
+  "billingAddressCity" : "Vienna",
+  "billingAddressCountryIso2Code" : "AT"
+}
+
+###
+POST  http://localhost:8080/api/photographers/
+Content-Type: application/json
+
+{
+  "userName" : "sbt@spg.at",
+  "firstName" : "SBT",
+  "lastName" : "Büyüktanir",
+  "billingAddressStreetNumber" : "Spengergasse 20",
+  "billingAddressZipCode" : "1050",
+  "billingAddressCity" : "Vienna",
+  "billingAddressCountryIso2Code" : "AT"
+}
+
+###
+GET  http://localhost:8080/api/photographers/L2Ne
+Accept: application/json
+
+###
+
+GET  http://localhost:8080/api/photographers/81ig
+Accept: application/json
+
+###
+
+GET  http://localhost:8080/api/photographers/
+Accept: application/json
+
+###

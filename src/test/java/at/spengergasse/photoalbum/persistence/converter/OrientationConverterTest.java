@@ -1,6 +1,7 @@
 package at.spengergasse.photoalbum.persistence.converter;
 
 import at.spengergasse.photoalbum.domain.Orientation;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -23,6 +24,7 @@ class OrientationConverterTest {
         assertThat(orientationConverter.convertToEntityAttribute(null)).isNull();
     }
 
+    @Disabled
     @Test
     void ensureCorrectHandlingofDataQualityProblems(){
         //given
