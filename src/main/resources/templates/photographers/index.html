@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<body>
+<div class="container" layout:fragment="content">
+<h2>Photographers</h2>
+    <table class="table" th:unless="${#lists.isEmpty(photographers)}" th:id="tbl-photographers">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Username</th>
+            <th scope="col">Firstname</th>
+            <th scope="col">Lastname</th>
+            <th scope="col">
+                <a class="btn btn-primary" href="#" th:href="@{/photographers/add}">add</a>
+            </th>
+        </tr>
+        </thead>
+
+        <tbody hx-confirm="Are you sure?">
+        <tr th:replace="~{/photographers/fragments :: photographer-row}"/>
+
+        </tbody>
+    </table>
+    <p th:if="${#lists.isEmpty(photographers)}">Keine Daten für Fotografen vorhanden!</p>
+
+</div>
+
+</body>
+</html>

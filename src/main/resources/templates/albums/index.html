@@ -4,30 +4,26 @@
 
 <body>
 <div class="container" layout:fragment="content">
-<h2>Photos</h2>
-    <table class="table" th:unless="${#lists.isEmpty(photos)}" th:id="tbl-photos">
+<h2>Albums</h2>
+    <table class="table" th:unless="${#lists.isEmpty(albums)}" th:id="tbl-albums">
         <thead>
         <tr>
             <th scope="col">#</th>
             <th scope="col">Name</th>
-            <th scope="col">Dateinamen</th>
-            <th scope="col">Breite</th>
-            <th scope="col">Höhe</th>
-            <th scope="col">Fotograf</th>
-            <th scope="col">Format</th>
+            <th scope="col">Restricted</th>
             <th scope="col">erstellt am</th>
             <th scope="col">
-                <a class="btn btn-primary" href="#" th:href="@{/photos/add}">add</a>
+                <a class="btn btn-primary" href="#" th:href="@{/albums/add}">add</a>
             </th>
         </tr>
         </thead>
 
         <tbody hx-confirm="Are you sure?">
-        <tr th:replace="~{/photos/fragments :: photo-row}"/>
+        <tr th:replace="~{/albums/fragments :: album-row}"/>
 
         </tbody>
     </table>
-    <p th:if="${#lists.isEmpty(photos)}">Keine Daten für Fotos vorhanden!</p>
+    <p th:if="${#lists.isEmpty(albums)}">Keine Daten für Alben vorhanden!</p>
 
 </div>
 

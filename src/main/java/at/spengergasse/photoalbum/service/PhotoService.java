@@ -32,6 +32,7 @@ public class PhotoService {
 //    private final SimpleJpaRepository simpleJpaRepository;
     private final DateTimeFactory dateTimeFactory;
     private final Base58 keyGen;
+//    private final Ensurer ensurer;
 
     @Transactional(readOnly = false)  //default false
     public Photo createPhoto(CreatePhotoCommand cmd) {
@@ -104,5 +105,13 @@ public class PhotoService {
             p.setHeight(height);
             p.setPhotographer(photographerRepository.getReferenceByKey(photographerKey));
         });
+    }
+
+    public Optional<Photo> getPhoto(String key) {
+        return photoRepository.findByKey(key);
+    }
+
+    public void deleteKey(String key) {
+        photoRepository.deleteByKey(key);
     }
 }

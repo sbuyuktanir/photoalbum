@@ -7,11 +7,14 @@ import at.spengergasse.photoalbum.service.forms.AddPhotoForm;
 import at.spengergasse.photoalbum.service.forms.EditPhotoForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -33,22 +36,24 @@ public class PhotoController implements ControllerSupport{
     @GetMapping
     public String getAllPhotos(Model model) {
 //Syntax Prüfung des Inputs , Input Verarbeitung, Daten Beschaffung, Logik
-        List<Photo> photos = photoService.getAllPhotos();
-        log.debug("Found {} photos in getAllPhotos()", photos.size());
-        if (photos.size() == 1) {
-            model.addAttribute("photo", photos.get(0));
+        List<Photo> allPhotos = photoService.getAllPhotos();
+        log.debug("Found {} photos in getAllPhotos()", allPhotos.size());
+
+        if (allPhotos.size() == 1) {
+            model.addAttribute("photo", allPhotos.get(0));
             return template("detail");
         }
-        model.addAttribute("photos", photos);
+
+        model.addAttribute("photos", allPhotos);
         return template("index");   // return index.html
 //        return "photos/index";   // return index.html
 //        return TEMPLATE_BASE_DIR+"index";   // return index.html
     }
 
     @GetMapping(KEY_PATH_VAR)
-    public String getPhoto(@PathVariable String key, Model model) {
+    public String getPhoto(Model model, @PathVariable String key ) {
 
-        Optional<Photo> photo = photoService.findByKey(key);
+        Optional<Photo> photo = photoService.getPhoto(key);
         if (photo.isEmpty()) return redirect(BASE_ROUTE);  //if no photo geh zurück BASE_ROUTE = Photos Tabelle
         model.addAttribute("photo", photo.get());
 //        return "photos/detail";   // return detail.html
@@ -56,11 +61,26 @@ public class PhotoController implements ControllerSupport{
         return template("detail");   // return detail.html
     }
 
+    @GetMapping(KEY_PATH_VAR + "/row")
+    public String getPhotoAsRow(Model model, @PathVariable String key, HttpServletResponse response) {
+
+        Optional<Photo> photo = photoService.getPhoto(key);
+
+        if (photo.isEmpty()) return redirect(BASE_ROUTE);  //if no photo geh zurück BASE_ROUTE = Photos Tabelle
+        model.addAttribute("photos", List.of(photo.get()));
+
+        response.setHeader("HX-Trigger", "showPhotoRow");
+//        return "photos/detail";   // return detail.html
+//        return TEMPLATE_BASE_DIR+"detail";   // return detail.html
+        return template("fragments : photo-row");   // return detail.html
+    }
+
     @GetMapping(ADD_PATH)
     public String showAddPhotoForm(Model model) {
         populatePhotographers (model);
 //        model.addAttribute("photographers", photographerService.getAllPhotographers());
         model.addAttribute("addPhotoForm", new AddPhotoForm());
+        populatePhotographers(model);
         return template("addForm");
     }
 
@@ -109,6 +129,14 @@ public class PhotoController implements ControllerSupport{
         photoService.updatePhoto(key, editPhotoForm.getFileName(), editPhotoForm.getName(),
                 editPhotoForm.getWidth(), editPhotoForm.getHeight(), editPhotoForm.getPhotographerKey());
         return redirect(BASE_ROUTE);
+    }
+
+    @DeleteMapping(value =KEY_PATH_VAR )
+    @HxRequest
+    @ResponseBody
+    public HttpEntity<String> deletePhotoHtmx(@PathVariable String key) {
+        photoService.deleteKey(key);
+        return ResponseEntity.ok(null);
     }
 
 //    @GetMapping("/{key}/delete")

@@ -66,6 +66,30 @@ public class PhotographerService {
                 .orElseThrow();
     }
 
+    @Transactional(readOnly = false)
+    public Optional<Photographer> updatePhotographerUserName(String key, String newUserName) {
+        return photographerRepository.findByKey(key)
+                .map(p -> {
+                    p.setUserName(newUserName);
+//                    return photoRepository.save(p);  //save ist nicht Muss, nicht Notwendig
+                    return p;
+                });
+    }
+
+    @Transactional(readOnly = false)
+    public void updatePhotographer(String Key, String userName, String firstName, String lastName) {
+        photographerRepository.findByKey(Key).ifPresent(p -> {
+            p.setUserName(userName);
+            p.setFirstName(firstName);
+            p.setLastName(lastName);
+        });
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteByKey(String key) {
+        photographerRepository.deleteByKey(key);
+    }
+
     public List<Photographer> getAllPhotographers() {
 
         return photographerRepository.findAll();
@@ -79,5 +103,24 @@ public class PhotographerService {
     public Optional<Photographer> getPhotographer(String key) {
 
         return photographerRepository.findByKey(key);
+    }
+
+    public Optional<Photographer> findByKey(String key) {
+
+        return photographerRepository.findByKey(key);
+    }
+
+    public void deleteKey(String key) {
+        photographerRepository.deleteByKey(key);
+    }
+
+    @Transactional(readOnly = false)
+    public void updatePhotographer(String Key , String userName, String firstName, String lastName, String billingAddressCity,
+                                   String billingAddressStreetNumber, String billingAddressZipCode, String billingAddressCountryIso2Code) {
+        photographerRepository.findByKey(Key).ifPresent(p -> {
+            p.setUserName(userName);
+            p.setFirstName(firstName);
+            p.setLastName(lastName);
+        });
     }
 }

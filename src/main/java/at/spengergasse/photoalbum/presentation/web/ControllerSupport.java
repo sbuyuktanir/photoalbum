@@ -10,6 +10,11 @@ public interface ControllerSupport {
     final static String EDIT_PATH = KEY_PATH_VAR + "/edit";
     final static String DELETE_PATH = KEY_PATH_VAR + "/delete";
 
+    String INDEX_TEMPLATE = "index";
+    String DETAIL_TEMPLATE = "detail";
+    String ADD_FORM_TEMPLATE = "addForm";
+    String EDIT_FORM_TEMPLATE = "editForm";
+
     String getTemplateBaseDir();
 
     default String redirect(String route) {
